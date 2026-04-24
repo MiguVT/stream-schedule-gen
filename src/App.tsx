@@ -1,15 +1,24 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useScheduleStore, syncStateToUrl } from './store/useScheduleStore'
 import ScheduleCanvas from './components/ScheduleCanvas'
 import EditorPane from './components/EditorPane'
+import CustomizationPanel from './components/CustomizationPanel'
+import SettingsPanel from './components/SettingsPanel'
 import { useOBSMode } from './hooks/useOBSMode'
+import { useTheme } from './utils/theme'
+import { LayoutGrid, Palette, Settings2 } from 'lucide-react'
+import { clsx } from 'clsx'
+
+type Tab = 'editor' | 'customization' | 'settings'
 
 function App() {
   const isOBSMode = useOBSMode()
-  const loadFromUrl = useScheduleStore((state) => state.loadFromUrl)
-  const days = useScheduleStore((state) => state.days)
-  const timezones = useScheduleStore((state) => state.timezones)
-  const theme = useScheduleStore((state) => state.theme)
+  const [activeTab, setActiveTab] = useState<Tab>('editor')
+  const loadFromUrl = useScheduleStore((s) => s.loadFromUrl)
+  const days = useScheduleStore((s) => s.days)
+  const timezones = useScheduleStore((s) => s.timezones)
+  const settings = useScheduleStore((s) => s.settings)
+  const { colors } = useTheme()
 
   useEffect(() => {
     loadFromUrl()
@@ -19,29 +28,95 @@ function App() {
     if (!isOBSMode) {
       syncStateToUrl()
     }
-  }, [days, timezones, theme, isOBSMode])
+  }, [days, timezones, settings, isOBSMode])
+
+  // Get background style
+  const getBackgroundStyle = () => {
+    if (settings.customBackground && settings.backgroundType === 'image') {
+      return { backgroundImage: `url(${settings.customBackground})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    }
+    if (settings.backgroundType === 'gradient') {
+      return { backgroundImage: `linear-gradient(135deg, ${colors.bgSecondary.replace('bg-', '#')} 0%, ${colors.bgTertiary.replace('bg-', '#')} 100%)` }
+    }
+    if (settings.backgroundType === 'solid') {
+      return { backgroundColor: colors.bgSecondary.replace('bg-', '#') }
+    }
+    return {}
+  }
 
   if (isOBSMode) {
     return (
-      <div className="min-h-screen bg-transparent flex items-center justify-center p-8">
-        <div data-export="schedule">
+      <div 
+        className="min-h-screen w-full flex items-center justify-center p-0 md:p-8"
+        style={getBackgroundStyle()}
+      >
+        <div className="w-full max-w-6xl" data-export="schedule">
           <ScheduleCanvas />
         </div>
       </div>
     )
   }
 
+  const tabs: { id: Tab; label: string; icon: typeof LayoutGrid }[] = [
+    { id: 'editor', label: 'Editor', icon: LayoutGrid },
+    { id: 'customization', label: 'Customization', icon: Palette },
+    { id: 'settings', label: 'Settings', icon: Settings2 },
+  ]
+
   return (
-    <div className="min-h-screen bg-dark-950">
-      <div className="flex h-screen">
-        <EditorPane />
-        <div className="flex-1 overflow-auto bg-dark-900 grid-bg">
-          <div className="max-w-4xl mx-auto p-8">
-            <div data-export="schedule">
+    <div className={`min-h-screen ${colors.bg}`}>
+      <div className="flex h-screen overflow-hidden">
+        {/* Left Panel - Tabbed Interface */}
+        <aside className={`w-96 ${colors.bgSecondary} border-r ${colors.border} flex flex-col overflow-hidden`}>
+          {/* Header */}
+          <header className={`px-6 py-4 border-b ${colors.border} flex items-center justify-between flex-shrink-0`}>
+            <div className="flex items-center gap-2">
+              <Settings2 className="w-5 h-5 text-primary-400" />
+              <h1 className="font-bold text-lg text-white">Stream Schedule</h1>
+            </div>
+          </header>
+
+          {/* Tabs */}
+          <div className={`flex border-b ${colors.border} flex-shrink-0`}>
+            {tabs.map((tab) => {
+              const Icon = tab.icon
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={clsx(
+                    'flex-1 px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 transition-colors',
+                    activeTab === tab.id
+                      ? 'text-primary-400 border-b-2 border-primary-400'
+                      : 'text-dark-400 hover:text-dark-200'
+                  )}
+                >
+                  <Icon className="w-4 h-4" />
+                  {tab.label}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Tab Content - Scrollable */}
+          <div className="flex-1 overflow-y-auto p-6">
+            {activeTab === 'editor' && <EditorPane />}
+            {activeTab === 'customization' && <CustomizationPanel />}
+            {activeTab === 'settings' && <SettingsPanel />}
+          </div>
+        </aside>
+        
+        {/* Right Panel - Preview */}
+        <main 
+          className="flex-1 overflow-auto"
+          style={getBackgroundStyle()}
+        >
+          <div className="w-full h-full flex items-center justify-center p-4 md:p-8">
+            <div className="w-full max-w-6xl" data-export="schedule">
               <ScheduleCanvas />
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   )

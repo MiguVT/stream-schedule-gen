@@ -72,7 +72,8 @@ export function getFlag(timezone: string): string {
 
 export function formatTimeForZones(
   time: string,
-  zones: Array<{ timezone: string; label: string }>
+  zones: Array<{ timezone: string; label: string }>,
+  show12HourFormat: boolean = false
 ): Array<{ timezone: string; label: string; formatted: string; flag: string }> {
   const [hours, minutes] = time.split(':').map(Number)
   const baseDate = new Date()
@@ -83,7 +84,7 @@ export function formatTimeForZones(
       const options: Intl.DateTimeFormatOptions = {
         hour: '2-digit',
         minute: '2-digit',
-        hour12: false,
+        hour12: show12HourFormat,
       }
       const formatter = new Intl.DateTimeFormat('en-US', {
         ...options,
@@ -107,37 +108,37 @@ export function formatTimeForZones(
   })
 }
 
-export const MAJOR_TIMEZONES: Array<{ timezone: string; label: string }> = [
-  { timezone: 'UTC', label: 'UTC' },
-  { timezone: 'Europe/London', label: 'London' },
-  { timezone: 'Europe/Madrid', label: 'Madrid' },
-  { timezone: 'Europe/Paris', label: 'Paris' },
-  { timezone: 'Europe/Berlin', label: 'Berlin' },
-  { timezone: 'Europe/Rome', label: 'Rome' },
-  { timezone: 'Europe/Amsterdam', label: 'Amsterdam' },
-  { timezone: 'Europe/Warsaw', label: 'Warsaw' },
-  { timezone: 'Europe/Istanbul', label: 'Istanbul' },
-  { timezone: 'Europe/Moscow', label: 'Moscow' },
-  { timezone: 'America/New_York', label: 'New York (EST)' },
-  { timezone: 'America/Chicago', label: 'Chicago (CST)' },
-  { timezone: 'America/Denver', label: 'Denver (MST)' },
-  { timezone: 'America/Los_Angeles', label: 'Los Angeles (PST)' },
-  { timezone: 'America/Argentina/Buenos_Aires', label: 'Buenos Aires' },
-  { timezone: 'America/Sao_Paulo', label: 'São Paulo' },
-  { timezone: 'America/Mexico_City', label: 'Mexico City' },
-  { timezone: 'America/Bogota', label: 'Bogotá' },
-  { timezone: 'America/Lima', label: 'Lima' },
-  { timezone: 'America/Santiago', label: 'Santiago' },
-  { timezone: 'Asia/Tokyo', label: 'Tokyo' },
-  { timezone: 'Asia/Seoul', label: 'Seoul' },
-  { timezone: 'Asia/Shanghai', label: 'Shanghai' },
-  { timezone: 'Asia/Hong_Kong', label: 'Hong Kong' },
-  { timezone: 'Asia/Singapore', label: 'Singapore' },
-  { timezone: 'Asia/Bangkok', label: 'Bangkok' },
-  { timezone: 'Asia/Kolkata', label: 'Kolkata' },
-  { timezone: 'Asia/Dubai', label: 'Dubai' },
-  { timezone: 'Australia/Sydney', label: 'Sydney' },
-  { timezone: 'Pacific/Auckland', label: 'Auckland' },
-  { timezone: 'Africa/Cairo', label: 'Cairo' },
-  { timezone: 'Africa/Johannesburg', label: 'Johannesburg' },
+export const MAJOR_TIMEZONES: Array<{ timezone: string; label: string; flag: string }> = [
+  { timezone: 'UTC', label: 'UTC', flag: '🌐' },
+  { timezone: 'Europe/London', label: 'London', flag: '🇬🇧' },
+  { timezone: 'Europe/Madrid', label: 'Madrid', flag: '🇪🇸' },
+  { timezone: 'Europe/Paris', label: 'Paris', flag: '🇫🇷' },
+  { timezone: 'Europe/Berlin', label: 'Berlin', flag: '🇩🇪' },
+  { timezone: 'Europe/Rome', label: 'Rome', flag: '🇮🇹' },
+  { timezone: 'Europe/Amsterdam', label: 'Amsterdam', flag: '🇳🇱' },
+  { timezone: 'Europe/Warsaw', label: 'Warsaw', flag: '🇵🇱' },
+  { timezone: 'Europe/Istanbul', label: 'Istanbul', flag: '🇹🇷' },
+  { timezone: 'Europe/Moscow', label: 'Moscow', flag: '🇷🇺' },
+  { timezone: 'America/New_York', label: 'New York', flag: '🇺🇸' },
+  { timezone: 'America/Chicago', label: 'Chicago', flag: '🇺🇸' },
+  { timezone: 'America/Denver', label: 'Denver', flag: '🇺🇸' },
+  { timezone: 'America/Los_Angeles', label: 'Los Angeles', flag: '🇺🇸' },
+  { timezone: 'America/Argentina/Buenos_Aires', label: 'Buenos Aires', flag: '🇦🇷' },
+  { timezone: 'America/Sao_Paulo', label: 'São Paulo', flag: '🇧🇷' },
+  { timezone: 'America/Mexico_City', label: 'Mexico City', flag: '🇲🇽' },
+  { timezone: 'America/Bogota', label: 'Bogotá', flag: '🇨🇴' },
+  { timezone: 'America/Lima', label: 'Lima', flag: '🇵🇪' },
+  { timezone: 'America/Santiago', label: 'Santiago', flag: '🇨🇱' },
+  { timezone: 'Asia/Tokyo', label: 'Tokyo', flag: '🇯🇵' },
+  { timezone: 'Asia/Seoul', label: 'Seoul', flag: '🇰🇷' },
+  { timezone: 'Asia/Shanghai', label: 'Shanghai', flag: '🇨🇳' },
+  { timezone: 'Asia/Hong_Kong', label: 'Hong Kong', flag: '🇭🇰' },
+  { timezone: 'Asia/Singapore', label: 'Singapore', flag: '🇸🇬' },
+  { timezone: 'Asia/Bangkok', label: 'Bangkok', flag: '🇹🇭' },
+  { timezone: 'Asia/Kolkata', label: 'Kolkata', flag: '🇮🇳' },
+  { timezone: 'Asia/Dubai', label: 'Dubai', flag: '🇦🇪' },
+  { timezone: 'Australia/Sydney', label: 'Sydney', flag: '🇦🇺' },
+  { timezone: 'Pacific/Auckland', label: 'Auckland', flag: '🇳🇿' },
+  { timezone: 'Africa/Cairo', label: 'Cairo', flag: '🇪🇬' },
+  { timezone: 'Africa/Johannesburg', label: 'Johannesburg', flag: '🇿🇦' },
 ]

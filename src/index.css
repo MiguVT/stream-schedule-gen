@@ -34,6 +34,7 @@
   --color-dark-600: #475569;
   --color-dark-700: #334155;
   --color-dark-800: #1e293b;
+  --color-dark-850: #161f2e;
   --color-dark-900: #0f172a;
   --color-dark-950: #020617;
 }
@@ -41,6 +42,28 @@
 @layer base {
   body {
     @apply bg-dark-950 text-white antialiased;
+  }
+  
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #334155 #0f172a;
+  }
+  
+  *::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  *::-webkit-scrollbar-track {
+    background: #0f172a;
+  }
+  
+  *::-webkit-scrollbar-thumb {
+    background-color: #334155;
+    border-radius: 4px;
+  }
+  
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: #475569;
   }
 }
 
@@ -54,8 +77,8 @@
   
   .grid-bg-light {
     background-image: 
-      linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
+      linear-gradient(rgba(124, 58, 237, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124, 58, 237, 0.05) 1px, transparent 1px);
     background-size: 20px 20px;
   }
 }
