@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #fdf8ff;
+  --color-primary-100: #fcf3ff;
+  --color-primary-200: #f6e6ff;
+  --color-primary-300: #edc4ff;
+  --color-primary-400: #d896ff;
+  --color-primary-500: #c072ff;
+  --color-primary-600: #a855f7;
+  --color-primary-700: #8b3dff;
+  --color-primary-800: #7c3aed;
+  --color-primary-900: #6d28d9;
+  --color-primary-950: #4c1d95;
+
+  --color-accent-50: #fffbeb;
+  --color-accent-100: #fef3c7;
+  --color-accent-200: #fde68a;
+  --color-accent-300: #fcd34d;
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
+  --color-accent-700: #b45309;
+  --color-accent-800: #92400e;
+  --color-accent-900: #78350f;
+  --color-accent-950: #451a03;
+
+  --color-dark-50: #f8fafc;
+  --color-dark-100: #f1f5f9;
+  --color-dark-200: #e2e8f0;
+  --color-dark-300: #cbd5e1;
+  --color-dark-400: #94a3b8;
+  --color-dark-500: #64748b;
+  --color-dark-600: #475569;
+  --color-dark-700: #334155;
+  --color-dark-800: #1e293b;
+  --color-dark-900: #0f172a;
+  --color-dark-950: #020617;
+}
+
+@layer base {
+  body {
+    @apply bg-dark-950 text-white antialiased;
+  }
+}
+
+@layer utilities {
+  .grid-bg {
+    background-image: 
+      linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  .grid-bg-light {
+    background-image: 
+      linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+}
