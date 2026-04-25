@@ -22,6 +22,8 @@ const COLORS = [
   { value: 'bg-purple-500', label: 'Violet' },
   { value: 'bg-indigo-500', label: 'Indigo' },
   { value: 'bg-teal-500', label: 'Teal' },
+  { value: 'bg-red-500', label: 'Red' },
+  { value: 'bg-orange-500', label: 'Orange' },
 ]
 
 function TimezonesSection() {
@@ -204,19 +206,19 @@ function DayEditor({
                     onDelete={() => removeActivity(daySchedule.day, activity.id)}
                   />
                 ))}
-<button
-                onClick={() =>
-                  addActivity(daySchedule.day, {
-                    time: '12:00',
-                    title: '',
-                    color: COLORS[0].value,
-                  })
-                }
-                className="w-full py-2.5 border-2 border-dashed border-dark-700 rounded-lg text-dark-400 hover:border-primary-500 hover:text-primary-400 hover:bg-primary-500/5 transition-all flex items-center justify-center gap-2 text-sm font-medium"
-              >
-                <Plus className="w-4 h-4" />
-                {t('add_activity')}
-              </button>
+                <button
+                  onClick={() =>
+                    addActivity(daySchedule.day, {
+                      time: '12:00',
+                      title: '',
+                      color: COLORS[0].value,
+                    })
+                  }
+                  className="w-full py-2.5 border-2 border-dashed border-dark-700 rounded-lg text-dark-400 hover:border-primary-500 hover:text-primary-400 hover:bg-primary-500/5 transition-all flex items-center justify-center gap-2 text-sm font-medium"
+                >
+                  <Plus className="w-4 h-4" />
+                  {t('add_activity')}
+                </button>
               </>
             )}
           </motion.div>

@@ -1,13 +1,10 @@
 import { useState } from 'react'
-import { useScheduleStore, loadPreset } from '../store/useScheduleStore'
-import { useTranslation } from '../utils/i18n'
-import { Download, FileJson, Upload, Globe, Monitor, SlidersVertical, AlertCircle, CheckCircle } from 'lucide-react'
+import { useScheduleStore } from '../store/useScheduleStore'
+import { Download, FileJson, Upload, Globe, Palette, AlertCircle, CheckCircle } from 'lucide-react'
 import { toPng } from 'html-to-image'
-import { clsx } from 'clsx'
 
 export default function SettingsPanel() {
-  const { settings, updateSettings, exportState, importState, resetSettings } = useScheduleStore()
-  const { t, setLanguage } = useTranslation()
+  const { settings, updateSettings, exportState, importState } = useScheduleStore()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
@@ -34,8 +31,6 @@ export default function SettingsPanel() {
       const dataUrl = await toPng(element, {
         backgroundColor: 'transparent' as any,
         pixelRatio: 2,
-        width: settings.exportWidth,
-        height: settings.exportHeight,
       })
       
       const link = document.createElement('a')
@@ -45,7 +40,7 @@ export default function SettingsPanel() {
       showSuccess('PNG exported successfully')
     } catch (e) {
       console.error('Export failed:', e)
-      showError('Failed to export PNG. Please try again.')
+      showError('Failed to export PNG')
     }
   }
 
@@ -61,8 +56,7 @@ export default function SettingsPanel() {
       URL.revokeObjectURL(url)
       showSuccess('JSON exported successfully')
     } catch (e) {
-      console.error('JSON export failed:', e)
-      showError('Failed to export JSON. Please try again.')
+      showError('Failed to export JSON')
     }
   }
 
@@ -77,12 +71,9 @@ export default function SettingsPanel() {
           importState(event.target.result as string)
           showSuccess('Schedule imported successfully')
         } catch (err) {
-          showError(err instanceof Error ? err.message : 'Failed to import schedule')
+          showError(err instanceof Error ? err.message : 'Failed to import')
         }
       }
-    }
-    reader.onerror = () => {
-      showError('Failed to read file')
     }
     reader.readAsText(file)
     e.target.value = ''
@@ -90,7 +81,7 @@ export default function SettingsPanel() {
 
   return (
     <div className="space-y-6">
-      {/* Error/Success Messages */}
+      {/* Messages */}
       {(error || success) && (
         <div className={clsx(
           'p-3 rounded-lg flex items-start gap-3',
@@ -101,173 +92,87 @@ export default function SettingsPanel() {
         </div>
       )}
 
-      {/* Presets Section */}
+      {/* Language */}
       <div className="space-y-3">
         <h3 className="text-sm font-semibold text-dark-300 flex items-center gap-2">
-          <SlidersVertical className="w-4 h-4" />
-          {t('presets')}
+          <Globe className="w-4 h-4" />
+          Language
         </h3>
-        <div className="space-y-2">
-          <button
-            onClick={() => loadPreset('vtuber_daily')}
-            className="w-full p-3 bg-dark-800 hover:bg-dark-700 rounded-lg text-left transition-colors"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-dark-200">{t('vtuber_daily')}</span>
-              <span className="text-xs text-dark-500">Daily streams</span>
+        <select
+          value={settings.language}
+          onChange={(e) => updateSettings({ language: e.target.value as any })}
+          className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-sm text-dark-200"
+        >
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="pt">Português</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="zh">中文</option>
+        </select>
+      </div>
+
+      {/* Global Colors */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold text-dark-300 flex items-center gap-2">
+          <Palette className="w-4 h-4" />
+          Global Colors
+        </h3>
+        <div className="grid grid-cols-2 gap-3">
+          {Object.entries(settings.widgetColors).map(([key, value]) => (
+            <div key={key} className="flex items-center gap-2">
+              <input
+                type="color"
+                value={value}
+                onChange={(e) => updateSettings({
+                  widgetColors: {
+                    ...settings.widgetColors,
+                    [key]: e.target.value,
+                  },
+                })}
+                className="w-10 h-10 rounded cursor-pointer border border-dark-700"
+              />
+              <span className="text-xs text-dark-300 capitalize flex-1">{key}</span>
+              <span className="text-xs text-dark-500 font-mono">{value}</span>
             </div>
-          </button>
-          <button
-            onClick={() => loadPreset('gamer_weekend')}
-            className="w-full p-3 bg-dark-800 hover:bg-dark-700 rounded-lg text-left transition-colors"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-dark-200">{t('gamer_weekend')}</span>
-              <span className="text-xs text-dark-500">Weekend only</span>
-            </div>
-          </button>
-          <button
-            onClick={() => loadPreset('content_creator')}
-            className="w-full p-3 bg-dark-800 hover:bg-dark-700 rounded-lg text-left transition-colors"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-dark-200">{t('content_creator')}</span>
-              <span className="text-xs text-dark-500">Multi-timezone</span>
-            </div>
-          </button>
-          <button
-            onClick={() => loadPreset('minimal_schedule')}
-            className="w-full p-3 bg-dark-800 hover:bg-dark-700 rounded-lg text-left transition-colors"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-dark-200">{t('minimal_schedule')}</span>
-              <span className="text-xs text-dark-500">Simple schedule</span>
-            </div>
-          </button>
+          ))}
         </div>
       </div>
 
-      {/* Export Section */}
+      {/* Export */}
       <div className="space-y-3 pt-6 border-t border-dark-700">
         <h3 className="text-sm font-semibold text-dark-300 flex items-center gap-2">
           <Download className="w-4 h-4" />
-          {t('export')}
+          Export
         </h3>
         <div className="grid grid-cols-3 gap-2">
           <button
             onClick={handleExport}
-            className="flex items-center justify-center gap-2 px-3 py-2 bg-dark-800 hover:bg-dark-700 rounded-lg text-xs text-dark-200 transition-colors"
+            className="flex items-center justify-center gap-2 px-3 py-2 bg-dark-800 hover:bg-dark-700 rounded-lg text-xs text-dark-200"
           >
             <Download className="w-3 h-3" />
             PNG
           </button>
           <button
             onClick={handleExportJson}
-            className="flex items-center justify-center gap-2 px-3 py-2 bg-dark-800 hover:bg-dark-700 rounded-lg text-xs text-dark-200 transition-colors"
+            className="flex items-center justify-center gap-2 px-3 py-2 bg-dark-800 hover:bg-dark-700 rounded-lg text-xs text-dark-200"
           >
             <FileJson className="w-3 h-3" />
             JSON
           </button>
-          <label className="flex items-center justify-center gap-2 px-3 py-2 bg-dark-800 hover:bg-dark-700 rounded-lg text-xs text-dark-200 cursor-pointer transition-colors">
+          <label className="flex items-center justify-center gap-2 px-3 py-2 bg-dark-800 hover:bg-dark-700 rounded-lg text-xs text-dark-200 cursor-pointer">
             <Upload className="w-3 h-3" />
             Import
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleImportJson}
-              className="hidden"
-            />
+            <input type="file" accept=".json" onChange={handleImportJson} className="hidden" />
           </label>
         </div>
-      </div>
-
-      {/* Language */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-dark-300 flex items-center gap-2">
-          <Globe className="w-4 h-4" />
-          {t('language')}
-        </h3>
-        <select
-          value={settings.language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-sm text-dark-200 focus:outline-none focus:border-primary-500"
-        >
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          <option value="pt">Português (AI)</option>
-          <option value="fr">Français (AI)</option>
-          <option value="de">Deutsch (AI)</option>
-          <option value="ja">日本語 (AI)</option>
-          <option value="ko">한국어 (AI)</option>
-          <option value="zh">中文 (AI)</option>
-        </select>
-      </div>
-
-      {/* Display Options */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-dark-300 flex items-center gap-2">
-          <Monitor className="w-4 h-4" />
-          {t('display')}
-        </h3>
-        <div className="space-y-3">
-          <div className="space-y-2">
-            <label className="text-xs text-dark-400">{t('day_format')}</label>
-            <select
-              value={settings.dayFormat}
-              onChange={(e) => updateSettings({ dayFormat: e.target.value as any })}
-              className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-sm text-dark-200 focus:outline-none focus:border-primary-500"
-            >
-              <option value="day-name">{t('day_name')}</option>
-              <option value="day-number">{t('day_number')}</option>
-              <option value="day-month">{t('day_month')}</option>
-              <option value="short-name">{t('short_name')}</option>
-              <option value="full-name">{t('full_name')}</option>
-            </select>
-          </div>
-          
-          <label className="flex items-center justify-between p-2 rounded hover:bg-dark-800 transition-colors">
-            <span className="text-sm text-dark-300">{t('show_timezone_labels')}</span>
-            <input
-              type="checkbox"
-              checked={settings.showTimezoneLabels}
-              onChange={(e) => updateSettings({ showTimezoneLabels: e.target.checked })}
-              className="rounded"
-            />
-          </label>
-          <label className="flex items-center justify-between p-2 rounded hover:bg-dark-800 transition-colors">
-            <span className="text-sm text-dark-300">{t('compact_mode')}</span>
-            <input
-              type="checkbox"
-              checked={settings.compactMode}
-              onChange={(e) => updateSettings({ compactMode: e.target.checked })}
-              className="rounded"
-            />
-          </label>
-          <label className="flex items-center justify-between p-2 rounded hover:bg-dark-800 transition-colors">
-            <span className="text-sm text-dark-300">{t('twelve_hour_format')}</span>
-            <input
-              type="checkbox"
-              checked={settings.show12HourFormat}
-              onChange={(e) => updateSettings({ show12HourFormat: e.target.checked })}
-              className="rounded"
-            />
-          </label>
-        </div>
-      </div>
-
-      {/* Reset */}
-      <div className="pt-4 border-t border-dark-700">
-        <button
-          onClick={() => {
-            if (confirm('Are you sure you want to reset all settings? This cannot be undone.')) {
-              resetSettings()
-            }
-          }}
-          className="w-full px-4 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-900/50 rounded-lg text-sm transition-colors"
-        >
-          {t('reset')} All Settings
-        </button>
       </div>
     </div>
   )
+}
+
+function clsx(...classes: (string | undefined | null | false)[]) {
+  return classes.filter(Boolean).join(' ')
 }

@@ -1,22 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useScheduleStore, syncStateToUrl } from './store/useScheduleStore'
-import ScheduleCanvas from './components/ScheduleCanvas'
+import MasonryCanvas from './components/MasonryCanvas'
 import EditorPane from './components/EditorPane'
-import CustomizationPanel from './components/CustomizationPanel'
+import WidgetEditor from './components/WidgetEditor'
 import SettingsPanel from './components/SettingsPanel'
 import { useOBSMode } from './hooks/useOBSMode'
 import { useTheme } from './utils/theme'
-import { LayoutGrid, Palette, Settings2 } from 'lucide-react'
+import { LayoutGrid, Puzzle, Settings2 } from 'lucide-react'
 import { clsx } from 'clsx'
 
-type Tab = 'editor' | 'customization' | 'settings'
+type Tab = 'editor' | 'widgets' | 'settings'
 
 function App() {
   const isOBSMode = useOBSMode()
   const [activeTab, setActiveTab] = useState<Tab>('editor')
   const loadFromUrl = useScheduleStore((s) => s.loadFromUrl)
-  const days = useScheduleStore((s) => s.days)
-  const timezones = useScheduleStore((s) => s.timezones)
+  const widgets = useScheduleStore((s) => s.widgets)
   const settings = useScheduleStore((s) => s.settings)
   const { colors } = useTheme()
 
@@ -28,7 +27,7 @@ function App() {
     if (!isOBSMode) {
       syncStateToUrl()
     }
-  }, [days, timezones, settings, isOBSMode])
+  }, [widgets, settings, isOBSMode])
 
   // Get background style
   const getBackgroundStyle = () => {
@@ -36,10 +35,10 @@ function App() {
       return { backgroundImage: `url(${settings.customBackground})`, backgroundSize: 'cover', backgroundPosition: 'center' }
     }
     if (settings.backgroundType === 'gradient') {
-      return { backgroundImage: `linear-gradient(135deg, ${colors.bgSecondary.replace('bg-', '#')} 0%, ${colors.bgTertiary.replace('bg-', '#')} 100%)` }
+      return { backgroundImage: `linear-gradient(135deg, #1e293b 0%, #0f172a 100%)` }
     }
     if (settings.backgroundType === 'solid') {
-      return { backgroundColor: colors.bgSecondary.replace('bg-', '#') }
+      return { backgroundColor: '#0f172a' }
     }
     return {}
   }
@@ -47,19 +46,19 @@ function App() {
   if (isOBSMode) {
     return (
       <div 
-        className="min-h-screen w-full flex items-center justify-center p-0 md:p-8"
+        className="min-h-screen w-full flex items-center justify-center p-4 md:p-8 overflow-auto"
         style={getBackgroundStyle()}
       >
         <div className="w-full max-w-6xl" data-export="schedule">
-          <ScheduleCanvas />
+          <MasonryCanvas />
         </div>
       </div>
     )
   }
 
   const tabs: { id: Tab; label: string; icon: typeof LayoutGrid }[] = [
-    { id: 'editor', label: 'Editor', icon: LayoutGrid },
-    { id: 'customization', label: 'Customization', icon: Palette },
+    { id: 'editor', label: 'Schedule', icon: LayoutGrid },
+    { id: 'widgets', label: 'Widgets', icon: Puzzle },
     { id: 'settings', label: 'Settings', icon: Settings2 },
   ]
 
@@ -101,7 +100,7 @@ function App() {
           {/* Tab Content - Scrollable */}
           <div className="flex-1 overflow-y-auto p-6">
             {activeTab === 'editor' && <EditorPane />}
-            {activeTab === 'customization' && <CustomizationPanel />}
+            {activeTab === 'widgets' && <WidgetEditor />}
             {activeTab === 'settings' && <SettingsPanel />}
           </div>
         </aside>
@@ -111,9 +110,9 @@ function App() {
           className="flex-1 overflow-auto"
           style={getBackgroundStyle()}
         >
-          <div className="w-full h-full flex items-center justify-center p-4 md:p-8">
-            <div className="w-full max-w-6xl" data-export="schedule">
-              <ScheduleCanvas />
+          <div className="w-full min-h-full p-4 md:p-8">
+            <div className="w-full max-w-6xl mx-auto">
+              <MasonryCanvas />
             </div>
           </div>
         </main>

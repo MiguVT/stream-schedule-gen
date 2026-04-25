@@ -24,54 +24,113 @@ export type TimezoneConfig = {
 
 export type ScheduleStyle = 'ribbon' | 'cards' | 'minimal' | 'gradient' | 'timeline' | 'compact' | 'calendar' | 'week'
 
-export type LayoutType = 'default' | 'avatar-left' | 'avatar-right' | 'avatar-top' | 'minimal'
+export type WidgetType = 
+  | 'schedule' 
+  | 'image' 
+  | 'title' 
+  | 'text' 
+  | 'social' 
+  | 'divider' 
+  | 'color-block'
+  | 'custom-html'
+
+export type Widget = {
+  id: string
+  type: WidgetType
+  enabled: boolean
+  config: WidgetConfig
+}
+
+export type WidgetConfig = {
+  // Common
+  width?: string
+  padding?: string
+  margin?: string
+  backgroundColor?: string
+  
+  // Schedule-specific
+  scheduleStyle?: ScheduleStyle
+  showDayNumbers?: boolean
+  showDayNames?: boolean
+  compactMode?: boolean
+  
+  // Image-specific
+  imageUrl?: string
+  imageAlt?: string
+  imageWidth?: string
+  imageRounded?: string
+  imageBorder?: string
+  
+  // Title-specific
+  titleText?: string
+  titleSize?: string
+  titleAlign?: string
+  titleColor?: string
+  
+  // Text-specific
+  textContent?: string
+  textSize?: string
+  textAlign?: string
+  textColor?: string
+  
+  // Social-specific
+  socialLinks?: SocialLink[]
+  
+  // Divider-specific
+  dividerStyle?: string
+  dividerColor?: string
+  dividerHeight?: string
+  
+  // Color block-specific
+  blockColor?: string
+  blockHeight?: string
+  borderRadius?: string
+  
+  // Custom HTML
+  customHTML?: string
+}
+
+export type SocialLink = {
+  platform: string
+  url: string
+  label?: string
+}
 
 export type ColorPreset = 'strechedule-dark' | 'strechedule-light' | 'catppuccin-mocha' | 'catppuccin-macchiato' | 'dracula' | 'monokai' | 'nord' | 'synthwave' | 'gruvbox' | 'solarized-dark' | 'custom'
 
 export type Language = 'en' | 'es' | 'pt' | 'fr' | 'de' | 'ja' | 'ko' | 'zh'
 
-export type DayFormat = 'day' | 'day-name' | 'day-number' | 'day-month' | 'short-name'
-
 export type AppSettings = {
-  // Theme & Colors
   colorPreset: ColorPreset
   customColors: Record<string, string>
-  
-  // Layout & Style
-  scheduleStyle: ScheduleStyle
-  layout: LayoutType
-  avatarImage: string | null
-  avatarSize: 'small' | 'medium' | 'large'
-  showAvatarName: boolean
-  avatarName: string
-  
-  // Background
-  customBackground: string | null
-  backgroundType: 'gradient' | 'image' | 'solid' | 'grid'
-  
-  // Advanced
-  customCSS: string
-  
-  // Language & Localization
   language: Language
   show12HourFormat: boolean
-  
-  // Display options
-  dayFormat: DayFormat
-  showDayNames: boolean
-  showDayNumbers: boolean
-  showTimezoneLabels: boolean
-  compactMode: boolean
-  
-  // Export options
+  customCSS: string
+  backgroundType: 'gradient' | 'image' | 'solid' | 'grid'
+  customBackground: string | null
   exportWidth: number
   exportHeight: number
+  widgetColors: {
+    primary: string
+    secondary: string
+    accent: string
+    surface: string
+    border: string
+    text: string
+    textMuted: string
+    success: string
+    warning: string
+    error: string
+  }
 }
 
 type Store = {
   // Data
   days: DaySchedule[]
   timezones: TimezoneConfig[]
+  
+  // Widgets
+  widgets: Widget[]
   
   // Settings
   settings: AppSettings
@@ -83,6 +142,13 @@ type Store = {
   addActivity: (day: number, activity: Omit<Activity, 'id'>) => void
   addTimezone: (timezone: string, label: string) => void
   removeTimezone: (timezoneId: string) => void
+  
+  // Actions - Widgets
+  addWidget: (type: WidgetType) => void
+  removeWidget: (widgetId: string) => void
+  updateWidget: (widgetId: string, updates: Partial<Widget>) => void
+  updateWidgetConfig: (widgetId: string, config: Partial<WidgetConfig>) => void
+  duplicateWidget: (widgetId: string) => void
   
   // Actions - Settings
   updateSettings: (settings: Partial<AppSettings>) => void
@@ -111,27 +177,52 @@ const defaultTimezones: TimezoneConfig[] = [
   { id: 'utc', timezone: 'UTC', label: 'UTC' },
 ]
 
+const defaultWidgets: Widget[] = [
+  {
+    id: 'title-1',
+    type: 'title',
+    enabled: true,
+    config: {
+      titleText: 'Stream Schedule',
+      titleSize: 'large',
+      titleAlign: 'center',
+    },
+  },
+  {
+    id: 'schedule-1',
+    type: 'schedule',
+    enabled: true,
+    config: {
+      scheduleStyle: 'ribbon',
+      showDayNumbers: true,
+      showDayNames: true,
+      compactMode: false,
+    },
+  },
+]
+
 const defaultSettings: AppSettings = {
   colorPreset: 'strechedule-dark',
   customColors: {},
-  scheduleStyle: 'ribbon',
-  layout: 'default',
-  avatarImage: null,
-  avatarSize: 'medium',
-  showAvatarName: false,
-  avatarName: '',
-  customBackground: null,
-  backgroundType: 'grid',
-  customCSS: '',
   language: 'en',
   show12HourFormat: false,
-  dayFormat: 'day-name',
-  showDayNames: true,
-  showDayNumbers: true,
-  showTimezoneLabels: true,
-  compactMode: false,
+  customCSS: '',
+  backgroundType: 'grid',
+  customBackground: null,
   exportWidth: 1280,
   exportHeight: 720,
+  widgetColors: {
+    primary: '#3b82f6',
+    secondary: '#8b5cf6',
+    accent: '#06b6d4',
+    surface: '#1e293b',
+    border: '#334155',
+    text: '#f1f5f9',
+    textMuted: '#94a3b8',
+    success: '#22c55e',
+    warning: '#f59e0b',
+    error: '#ef4444',
+  },
 }
 
 function generateId(): string {
@@ -143,6 +234,7 @@ export const useScheduleStore = create<Store>()(
     (set, get) => ({
       days: defaultDays,
       timezones: defaultTimezones,
+      widgets: defaultWidgets,
       settings: defaultSettings,
 
       setDayOnline: (day, isOnline) =>
@@ -203,6 +295,47 @@ export const useScheduleStore = create<Store>()(
           timezones: state.timezones.filter((t) => t.id !== timezoneId),
         })),
 
+      addWidget: (type) => {
+        const newWidget: Widget = {
+          id: `${type}-${generateId()}`,
+          type,
+          enabled: true,
+          config: getDefaultWidgetConfig(type),
+        }
+        set((state) => ({ widgets: [...state.widgets, newWidget] }))
+      },
+
+      removeWidget: (widgetId) =>
+        set((state) => ({
+          widgets: state.widgets.filter((w) => w.id !== widgetId),
+        })),
+
+      updateWidget: (widgetId, updates) =>
+        set((state) => ({
+          widgets: state.widgets.map((w) =>
+            w.id === widgetId ? { ...w, ...updates } : w
+          ),
+        })),
+
+      updateWidgetConfig: (widgetId, config) =>
+        set((state) => ({
+          widgets: state.widgets.map((w) =>
+            w.id === widgetId ? { ...w, config: { ...w.config, ...config } } : w
+          ),
+        })),
+
+      duplicateWidget: (widgetId) => {
+        const widget = get().widgets.find((w) => w.id === widgetId)
+        if (widget) {
+          const newWidget: Widget = {
+            ...widget,
+            id: `${widget.type}-${generateId()}`,
+            config: { ...widget.config },
+          }
+          set((state) => ({ widgets: [...state.widgets, newWidget] }))
+        }
+      },
+
       updateSettings: (newSettings) =>
         set((state) => ({
           settings: { ...state.settings, ...newSettings },
@@ -231,6 +364,7 @@ export const useScheduleStore = create<Store>()(
               set({
                 days: parsed.days,
                 timezones: parsed.timezones,
+                widgets: parsed.widgets || defaultWidgets,
                 settings: { ...defaultSettings, ...parsed.settings },
               })
             } catch (e) {
@@ -249,6 +383,7 @@ export const useScheduleStore = create<Store>()(
         return JSON.stringify({ 
           days: state.days, 
           timezones: state.timezones,
+          widgets: state.widgets,
           settings: state.settings
         }, null, 2)
       },
@@ -267,6 +402,7 @@ export const useScheduleStore = create<Store>()(
           set({
             days: parsed.days,
             timezones: parsed.timezones,
+            widgets: parsed.widgets || defaultWidgets,
             settings: { ...defaultSettings, ...parsed.settings },
           })
         } catch (e) {
@@ -276,95 +412,90 @@ export const useScheduleStore = create<Store>()(
       },
     }),
     {
-      name: 'schedule-storage-v2',
+      name: 'schedule-storage-v3',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         days: state.days,
         timezones: state.timezones,
+        widgets: state.widgets,
         settings: state.settings,
       }),
     }
   )
 )
 
+function getDefaultWidgetConfig(type: WidgetType): WidgetConfig {
+  switch (type) {
+    case 'schedule':
+      return {
+        scheduleStyle: 'ribbon',
+        showDayNumbers: true,
+        showDayNames: true,
+        compactMode: false,
+      }
+    case 'image':
+      return {
+        imageWidth: '100%',
+        imageRounded: 'rounded-lg',
+        imageBorder: '',
+      }
+    case 'title':
+      return {
+        titleText: 'New Title',
+        titleSize: 'large',
+        titleAlign: 'center',
+      }
+    case 'text':
+      return {
+        textContent: 'Add your text here...',
+        textSize: 'normal',
+        textAlign: 'left',
+      }
+    case 'social':
+      return {
+        socialLinks: [],
+      }
+    case 'divider':
+      return {
+        dividerStyle: 'solid',
+        dividerHeight: '1px',
+      }
+    case 'color-block':
+      return {
+        blockColor: '#3b82f6',
+      }
+    case 'custom-html':
+      return {
+        customHTML: '<div>Custom HTML</div>',
+      }
+    default:
+      return {}
+  }
+}
+
 export function syncStateToUrl() {
-  const state = useScheduleStore.getState()
-  const data = JSON.stringify({ 
-    days: state.days, 
-    timezones: state.timezones,
-    settings: state.settings
-  })
-  const encoded = btoa(data)
-  
-  const params = new URLSearchParams(window.location.search)
-  params.set('state', encoded)
-  
-  const newUrl = `${window.location.pathname}?${params.toString()}`
-  window.history.replaceState({}, '', newUrl)
-}
-
-export const PRESET_TEMPLATES = {
-  vtuber_daily: {
-    days: [
-      { day: 1, name: 'Monday', isOnline: true, activities: [{ id: '1', time: '18:00', title: 'Good Evening Stream', color: 'bg-pink-500' }, { id: '2', time: '22:00', title: 'Late Night Chill', color: 'bg-purple-500' }] },
-      { day: 2, name: 'Tuesday', isOnline: true, activities: [{ id: '3', time: '18:00', title: 'Good Evening Stream', color: 'bg-pink-500' }, { id: '4', time: '22:00', title: 'Late Night Chill', color: 'bg-purple-500' }] },
-      { day: 3, name: 'Wednesday', isOnline: true, activities: [{ id: '5', time: '18:00', title: 'Good Evening Stream', color: 'bg-pink-500' }, { id: '6', time: '22:00', title: 'Late Night Chill', color: 'bg-purple-500' }] },
-      { day: 4, name: 'Thursday', isOnline: true, activities: [{ id: '7', time: '18:00', title: 'Good Evening Stream', color: 'bg-pink-500' }, { id: '8', time: '22:00', title: 'Late Night Chill', color: 'bg-purple-500' }] },
-      { day: 5, name: 'Friday', isOnline: true, activities: [{ id: '9', time: '19:00', title: 'Weekend Kickoff', color: 'bg-pink-500' }, { id: '10', time: '23:00', title: 'Party Time', color: 'bg-purple-500' }] },
-      { day: 6, name: 'Saturday', isOnline: true, activities: [{ id: '11', time: '14:00', title: 'Afternoon Stream', color: 'bg-pink-500' }, { id: '12', time: '20:00', title: 'Night Stream', color: 'bg-purple-500' }] },
-      { day: 7, name: 'Sunday', isOnline: false, activities: [] },
-    ],
-    timezones: [{ id: '1', timezone: 'UTC', label: 'UTC' }, { id: '2', timezone: 'Asia/Tokyo', label: 'Tokyo' }],
-    settings: { colorPreset: 'catppuccin-mocha', scheduleStyle: 'ribbon', layout: 'avatar-left', backgroundType: 'grid' },
-  },
-  gamer_weekend: {
-    days: [
-      { day: 1, name: 'Monday', isOnline: false, activities: [] },
-      { day: 2, name: 'Tuesday', isOnline: false, activities: [] },
-      { day: 3, name: 'Wednesday', isOnline: false, activities: [] },
-      { day: 4, name: 'Thursday', isOnline: false, activities: [] },
-      { day: 5, name: 'Friday', isOnline: true, activities: [{ id: '1', time: '20:00', title: 'Friday Night Gaming', color: 'bg-green-500' }] },
-      { day: 6, name: 'Saturday', isOnline: true, activities: [{ id: '2', time: '12:00', title: 'Weekend Grind', color: 'bg-green-500' }, { id: '3', time: '18:00', title: 'Co-op Session', color: 'bg-teal-500' }] },
-      { day: 7, name: 'Sunday', isOnline: true, activities: [{ id: '4', time: '14:00', title: 'Chill Sunday', color: 'bg-green-500' }] },
-    ],
-    timezones: [{ id: '1', timezone: 'UTC', label: 'UTC' }, { id: '2', timezone: 'America/New_York', label: 'New York' }],
-    settings: { colorPreset: 'dracula', scheduleStyle: 'cards', layout: 'default', backgroundType: 'grid' },
-  },
-  content_creator: {
-    days: [
-      { day: 1, name: 'Monday', isOnline: true, activities: [{ id: '1', time: '16:00', title: 'Content Creation', color: 'bg-blue-500' }, { id: '2', time: '20:00', title: 'Live Stream', color: 'bg-indigo-500' }] },
-      { day: 2, name: 'Tuesday', isOnline: true, activities: [{ id: '3', time: '16:00', title: 'Content Creation', color: 'bg-blue-500' }, { id: '4', time: '20:00', title: 'Live Stream', color: 'bg-indigo-500' }] },
-      { day: 3, name: 'Wednesday', isOnline: true, activities: [{ id: '5', time: '16:00', title: 'Content Creation', color: 'bg-blue-500' }, { id: '6', time: '20:00', title: 'Live Stream', color: 'bg-indigo-500' }] },
-      { day: 4, name: 'Thursday', isOnline: true, activities: [{ id: '7', time: '16:00', title: 'Content Creation', color: 'bg-blue-500' }, { id: '8', time: '20:00', title: 'Live Stream', color: 'bg-indigo-500' }] },
-      { day: 5, name: 'Friday', isOnline: true, activities: [{ id: '9', time: '18:00', title: 'Special Stream', color: 'bg-purple-500' }] },
-      { day: 6, name: 'Saturday', isOnline: true, activities: [{ id: '10', time: '15:00', title: 'Community Day', color: 'bg-pink-500' }] },
-      { day: 7, name: 'Sunday', isOnline: false, activities: [] },
-    ],
-    timezones: [{ id: '1', timezone: 'UTC', label: 'UTC' }, { id: '2', timezone: 'America/Los_Angeles', label: 'Los Angeles' }, { id: '3', timezone: 'Europe/London', label: 'London' }],
-    settings: { colorPreset: 'strechedule-dark', scheduleStyle: 'timeline', layout: 'default', backgroundType: 'gradient' },
-  },
-  minimal_schedule: {
-    days: [
-      { day: 1, name: 'Monday', isOnline: true, activities: [{ id: '1', time: '19:00', title: 'Stream', color: 'bg-primary-500' }] },
-      { day: 2, name: 'Tuesday', isOnline: true, activities: [{ id: '2', time: '19:00', title: 'Stream', color: 'bg-primary-500' }] },
-      { day: 3, name: 'Wednesday', isOnline: true, activities: [{ id: '3', time: '19:00', title: 'Stream', color: 'bg-primary-500' }] },
-      { day: 4, name: 'Thursday', isOnline: true, activities: [{ id: '4', time: '19:00', title: 'Stream', color: 'bg-primary-500' }] },
-      { day: 5, name: 'Friday', isOnline: true, activities: [{ id: '5', time: '19:00', title: 'Stream', color: 'bg-primary-500' }] },
-      { day: 6, name: 'Saturday', isOnline: false, activities: [] },
-      { day: 7, name: 'Sunday', isOnline: false, activities: [] },
-    ],
-    timezones: [{ id: '1', timezone: 'UTC', label: 'UTC' }],
-    settings: { colorPreset: 'nord', scheduleStyle: 'minimal', layout: 'minimal', backgroundType: 'solid' },
-  },
-}
-
-export function loadPreset(presetName: keyof typeof PRESET_TEMPLATES) {
-  const preset = PRESET_TEMPLATES[presetName]
-  if (!preset) return
-  
-  useScheduleStore.setState({
-    days: preset.days,
-    timezones: preset.timezones,
-    settings: { ...defaultSettings, ...preset.settings } as AppSettings,
-  })
+  try {
+    const state = useScheduleStore.getState()
+    
+    const data = JSON.stringify({ 
+      days: state.days, 
+      timezones: state.timezones,
+      widgets: state.widgets,
+      settings: state.settings
+    })
+    
+    const encoded = btoa(data)
+    if (encoded.length > 1500) {
+      console.warn('State too large for URL, skipping sync')
+      return
+    }
+    
+    const params = new URLSearchParams(window.location.search)
+    params.set('state', encoded)
+    
+    const newUrl = `${window.location.pathname}?${params.toString()}`
+    window.history.replaceState({}, '', newUrl)
+  } catch (e) {
+    console.warn('Failed to sync state to URL:', e)
+  }
 }

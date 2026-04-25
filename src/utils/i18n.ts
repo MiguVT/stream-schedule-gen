@@ -43,6 +43,7 @@ export type TranslationKey =
   | 'avatar_right'
   | 'avatar_top'
   | 'minimal_layout'
+  | 'widgets_layout'
   | 'avatar_image'
   | 'avatar_name'
   | 'show_name'
@@ -160,6 +161,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     avatar_right: 'Avatar Right',
     avatar_top: 'Avatar Top',
     minimal_layout: 'Minimal Layout',
+    widgets_layout: 'Widgets',
     avatar_image: 'Avatar Image',
     avatar_name: 'Avatar Name',
     show_name: 'Show Name',
@@ -276,6 +278,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     avatar_right: 'Avatar Derecha',
     avatar_top: 'Avatar Arriba',
     minimal_layout: 'Diseño Minimalista',
+    widgets_layout: 'Widgets',
     avatar_image: 'Imagen de Avatar',
     avatar_name: 'Nombre de Avatar',
     show_name: 'Mostrar Nombre',
@@ -392,6 +395,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     avatar_right: 'Avatar Direita',
     avatar_top: 'Avatar Cima',
     minimal_layout: 'Layout Minimalista',
+    widgets_layout: 'Widgets',
     avatar_image: 'Imagem do Avatar',
     avatar_name: 'Nome do Avatar',
     show_name: 'Mostrar Nome',
@@ -508,6 +512,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     avatar_right: 'Avatar Droite',
     avatar_top: 'Avatar Haut',
     minimal_layout: 'Mise en Page Minimaliste',
+    widgets_layout: 'Widgets',
     avatar_image: 'Image d\'Avatar',
     avatar_name: 'Nom de l\'Avatar',
     show_name: 'Afficher le Nom',
@@ -624,6 +629,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     avatar_right: 'Avatar Rechts',
     avatar_top: 'Avatar Oben',
     minimal_layout: 'Minimalistisches Layout',
+    widgets_layout: 'Widgets',
     avatar_image: 'Avatar Bild',
     avatar_name: 'Avatar Name',
     show_name: 'Name Anzeigen',
@@ -740,6 +746,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     avatar_right: 'アバター右',
     avatar_top: 'アバター上',
     minimal_layout: 'ミニマルレイアウト',
+    widgets_layout: 'ウィジェット',
     avatar_image: 'アバター画像',
     avatar_name: 'アバター名',
     show_name: '名を表示',
@@ -856,6 +863,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     avatar_right: '아바타 오른쪽',
     avatar_top: '아바타 위',
     minimal_layout: '미니멀 레이아웃',
+    widgets_layout: '위젯',
     avatar_image: '아바타 이미지',
     avatar_name: '아바타 이름',
     show_name: '이름 표시',
@@ -972,6 +980,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     avatar_right: '头像右侧',
     avatar_top: '头像顶部',
     minimal_layout: '极简布局',
+    widgets_layout: '小部件',
     avatar_image: '头像图片',
     avatar_name: '头像名称',
     show_name: '显示名称',
